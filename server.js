@@ -1,3 +1,10 @@
+/**
+ * server.js
+ * chat application login using mobile phone number 
+ * @author Guanqun Bao
+ * 6-14-2016
+ */
+
 var express = require('express');
 var bodyParser = require('body-parser');
 var _ = require('underscore');
@@ -7,11 +14,11 @@ var middleware = require('./middleware.js')(db);
 
 var app = express();
 var PORT = process.env.PORT || 3000;
-var todos = [];
-var todoNextId = 1;
-
 
 app.use(bodyParser.json());
+
+// Routing
+app.use(express.static(__dirname + '/public'));
 
 app.get('/', function(req, res) {
 	res.send('Todo API Root');
@@ -137,7 +144,7 @@ app.put('/todos/:id', middleware.requireAuthentication, function(req, res) {
 });
 
 app.post('/users', function (req, res) {
-	var body = _.pick(req.body, 'email', 'password');
+	var body = _.pick(req.body, 'email', 'mdn', 'password');
 
 	db.user.create(body).then(function (user) {
 		res.json(user.toPublicJSON());
@@ -148,7 +155,7 @@ app.post('/users', function (req, res) {
 
 // POST /users/login
 app.post('/users/login', function (req, res) {
-	var body = _.pick(req.body, 'email', 'password');
+	var body = _.pick(req.body, 'mdn', 'password');
 	var userInstance;
 
 	db.user.authenticate(body).then(function (user) {
