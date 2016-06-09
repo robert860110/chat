@@ -3,6 +3,10 @@ jQuery(document).ready(function($) {
         formLogin = formModal.find('#cd-login'),
         formSignup = formModal.find('#cd-signup'),
         formForgotPassword = formModal.find('#cd-reset-password'),
+        buttonLogin = formLogin.find('#button-login'),
+        buttonSignup = formSignup.find('#button-signup'),
+        buttonResend = formForgotPassword.find('#button-resend'),
+
         formModalTab = $('.cd-switcher'),
         tabLogin = formModalTab.children('li').eq(0).children('a'),
         tabSignup = formModalTab.children('li').eq(1).children('a'),
@@ -30,19 +34,18 @@ jQuery(document).ready(function($) {
     });
 
 
-    $(document).ready(function() {
-        $('#sendCode-login').click(function() {
-            $('.confirmationCode-login').css("display", "block");
-            $('#sendCode-login').val("Login");
-        });
+
+    buttonLogin.click(function() {
+        $('.confirmationCode-login').css("display", "block");
+        $(this).val("Login");
     });
 
-    $(document).ready(function() {
-        $('#sendCode-signup').click(function() {
-            $('.confirmationCode-signup').css("display", "block");
-            $('#sendCode-signup').val("Create Account");
-        });
+
+    buttonSignup.click(function() {
+        $('.confirmationCode-signup').css("display", "block");
+        $(this).val("Create Account");
     });
+
 
     //close modal
     formModal.on('click', function(event) {
