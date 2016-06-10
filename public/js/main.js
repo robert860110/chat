@@ -46,16 +46,35 @@ $(document).ready(function($) {
 
     // Click SignUp button
     buttonSignup.click(function(e) {
+
         e.preventDefault();
+        var data = {};
+        data.email = $('#signup-email').val();
+        data.mdn = $('#signup-phone').val();
+
 
         if ($(this).val() === 'Send Confirmation Code') {
+
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:3000/sendCode',
+                data: JSON.stringify(data),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                error: function(error) {
+                    alert(error.messages);
+                },
+                success: function(msg) {
+                    console.log(msg);
+                }
+            });
+
+
             $('.confirmationCode-signup').css("display", "block");
             $(this).val('Create Account');
+
         } else {
 
-            var data = {};
-            data.email = $('#signup-email').val();
-            data.mdn = $('#signup-phone').val();
             data.password = $('#signup-password').val();
 
             $.ajax({
@@ -117,6 +136,7 @@ $(document).ready(function($) {
         event.preventDefault();
         login_selected();
     });
+
 
     function login_selected() {
         mainNav.children('ul').removeClass('is-visible');
