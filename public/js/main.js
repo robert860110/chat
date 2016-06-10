@@ -1,4 +1,4 @@
-jQuery(document).ready(function($) {
+$(document).ready(function($) {
     var formModal = $('.cd-user-modal'),
         formLogin = formModal.find('#cd-login'),
         formSignup = formModal.find('#cd-signup'),
@@ -29,21 +29,50 @@ jQuery(document).ready(function($) {
     mainNav.click(function() {
         $('.confirmationCode-login').css("display", "none");
         $('.confirmationCode-signup').css("display", "none");
-        $('#sendCode-login').val("Send Confirmation Code");
-        $('#sendCode-signup').val("Send Confirmation Code");
+        buttonLogin.val("Send Confirmation Code");
+        buttonSignup.val("Send Confirmation Code");
     });
 
+    // buttonLogin.click(function() {
+    //     if (this.val() == "Send Confirmation Code") {
+    //         $('.confirmationCode-login').css("display", "block");
+    //         $(this).val("Login");
+    //     } else {
+
+    //     }
+    // });
 
 
-    buttonLogin.click(function() {
-        $('.confirmationCode-login').css("display", "block");
-        $(this).val("Login");
-    });
+    buttonSignup.click(function(e) {
+        e.preventDefault();
 
+        if ($(this).val() === 'Send Confirmation Code') {
+            $('.confirmationCode-signup').css("display", "block");
+            $(this).val('Create Account');
+        } else {
 
-    buttonSignup.click(function() {
-        $('.confirmationCode-signup').css("display", "block");
-        $(this).val("Create Account");
+            var data = {};
+            data.email = $('#signup-email').val();
+            data.mdn = $('#signup-phone').val();
+            data.password = $('#signup-password').val();
+
+            $.ajax({
+                type: 'POST',
+                // make sure you respect the same origin policy with this url:
+                // http://en.wikipedia.org/wiki/Same_origin_policy
+                url: 'http://localhost:3000/users',
+                data: JSON.stringify(data),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                error: function(error) {
+                    alert(error.messages);
+                },
+
+                success: function(msg) {
+                    alert('wow' + msg.mdn);
+                }
+            });
+        }
     });
 
 
@@ -53,6 +82,7 @@ jQuery(document).ready(function($) {
             formModal.removeClass('is-visible');
         }
     });
+
     //close modal when clicking the esc keyboard button
     $(document).keyup(function(event) {
         if (event.which == '27') {
@@ -149,7 +179,6 @@ jQuery(document).ready(function($) {
             })
         });
     }
-
 });
 
 

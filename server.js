@@ -145,6 +145,7 @@ app.put('/todos/:id', middleware.requireAuthentication, function(req, res) {
 
 app.post('/users', function (req, res) {
 	var body = _.pick(req.body, 'email', 'mdn', 'password');
+	console.log('body: ' + JSON.stringify(req.body));
 
 	db.user.create(body).then(function (user) {
 		res.json(user.toPublicJSON());

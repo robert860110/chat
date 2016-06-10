@@ -23,9 +23,10 @@ module.exports = function(sequelize, DataTypes) {
         password: {
             type: DataTypes.VIRTUAL,
             allowNull: false,
-            validate: {
-                len: [6, 10]
-            },
+            // validate: {
+           //     len: [6, 10]
+           // },
+
             set: function(value) {
                 var salt = bcrypt.genSaltSync(10);
                 var hashedPassword = bcrypt.hashSync(value, salt);
