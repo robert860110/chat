@@ -11,6 +11,8 @@ var _ = require('underscore');
 var db = require('./db.js');
 var bcrypt = require('bcrypt');
 var middleware = require('./middleware.js')(db);
+var twilio = require('twilio');
+var twilioClient = new twilio.RestClient('AC9c68ea35aee62e08292acd2bcfcf49b6', '938c9c574f9939b1736da9b1a3345c3c');
 
 var app = express();
 var PORT = process.env.PORT || 3000;
@@ -147,10 +149,40 @@ app.put('/todos/:id', middleware.requireAuthentication, function(req, res) {
 app.post('/sendCode', function(req, res) {
     var body = _.pick(req.body, 'mdn', 'email');
 
-
     if (body.hasOwnProperty('mdn') && body.hasOwnProperty('email')) {
         var password = Math.floor(100000 + Math.random() * 900000);
-        console.log(password);
+        // console.log(password);
+
+        // REST client will handle authentication and response serialzation for you.
+        twilioClient.sms.messages.create({
+            to: '6506565545',
+            from: '+1 408-359-4157',
+            body: 'ahoy hoy! Testing Twilio and node.js'
+        }, function(error, message) {
+            // The HTTP request to Twilio will run asynchronously. This callback
+            // function will be called when a response is received from Twilio
+            // The "error" variable will contain error information, if any.
+            // If the request was successful, this value will be "falsy"
+            console.log(error);
+
+            console.log(message);
+
+            if (!error) {
+                // The second argument to the callback will contain the information
+                // sent back by Twilio for the request. In this case, it is the
+                // information about the text messsage you just sent:
+                console.log('Success! The SID for this SMS message is:');
+                console.log(message.sid);
+
+                console.log('Message sent on:');
+                console.log(message.dateCreated);
+            } else {
+                console.log('Oops! There was an error.');
+            }
+        });
+
+
+
 
     } else if (body.hasOwnProperty('mdn') && !body.hasOwnProperty('email')) {
         db.user.findByMdn(body.mdn).then(function(user) {
