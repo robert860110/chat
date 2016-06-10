@@ -33,6 +33,7 @@ $(document).ready(function($) {
         buttonSignup.val("Send Confirmation Code");
     });
 
+
     // buttonLogin.click(function() {
     //     if (this.val() == "Send Confirmation Code") {
     //         $('.confirmationCode-login').css("display", "block");
@@ -43,6 +44,7 @@ $(document).ready(function($) {
     // });
 
 
+    // Click SignUp button
     buttonSignup.click(function(e) {
         e.preventDefault();
 
@@ -58,8 +60,6 @@ $(document).ready(function($) {
 
             $.ajax({
                 type: 'POST',
-                // make sure you respect the same origin policy with this url:
-                // http://en.wikipedia.org/wiki/Same_origin_policy
                 url: 'http://localhost:3000/users',
                 data: JSON.stringify(data),
                 dataType: "json",
@@ -67,7 +67,6 @@ $(document).ready(function($) {
                 error: function(error) {
                     alert(error.messages);
                 },
-
                 success: function(msg) {
                     alert('wow' + msg.mdn);
                 }
