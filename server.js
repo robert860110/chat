@@ -147,9 +147,10 @@ app.put('/todos/:id', middleware.requireAuthentication, function(req, res) {
 
 
 app.post('/sendCode', function(req, res) {
-    var body = _.pick(req.body, 'mdn', 'email');
 
-    if (body.hasOwnProperty('mdn') && body.hasOwnProperty('email')) {
+    var body = _.pick(req.body, 'mdn');
+
+    if (body.hasOwnProperty('mdn')) {
         var password = Math.floor(100000 + Math.random() * 900000);
         // console.log(password);
 
@@ -158,6 +159,7 @@ app.post('/sendCode', function(req, res) {
             mdn: body.mdn.toString()
         };
 
+        // Create a MDN to OTP mapping in the password database
         db.password.create(pwInstance).then(function(password) {
 
             twilioClient.sms.messages.create({
@@ -171,60 +173,27 @@ app.post('/sendCode', function(req, res) {
                     return res.status(400).json(error);
                 }
             });
-            res.json(password.toPublicJSON());
+
         }, function(error) {
             return res.status(400).json(error);
         });
-
-        // REST client will handle authentication and response serialzation for you.
-        // twilioClient.sms.messages.create({
-        //     to: body.mdn,
-        //     from: '+1 408-359-4157',
-        //     body: 'ahoy hoy! Testing Twilio and node.js'
-        // }, function(error, message) {
-        //     // The HTTP request to Twilio will run asynchronously. This callback
-        //     // function will be called when a response is received from Twilio
-        //     // The "error" variable will contain error information, if any.
-        //     // If the request was successful, this value will be "falsy"
-        //     console.log(error);
-
-        //     console.log(message);
-
-        //     if (!error) {
-        //         res.json(message);
-
-        //         // The second argument to the callback will contain the information
-        //         // sent back by Twilio for the request. In this case, it is the
-        //         // information about the text messsage you just sent:
-        //         // console.log('Success! The SID for this SMS message is:');
-        //         // console.log(message.sid);
-
-        //         // console.log('Message sent on:');
-        //         // console.log(message.dateCreated);
-        //     } else {
-        //         console.log('Oops! There was an error.');
-        //     }
-        // });
-
-    } else if (body.hasOwnProperty('mdn') && !body.hasOwnProperty('email')) {
-        db.user.findByMdn(body.mdn).then(function(user) {
-
-        }, function(error) {
-            res.status(400).send('No record match your phone number, please sign up first');
-        });
     }
-
 });
 
 // Create a new user account
 app.post('/users', function(req, res) {
     var body = _.pick(req.body, 'email', 'mdn', 'password');
-    //console.log('body: ' + JSON.stringify(req.body));
+    console.log('body: ' + JSON.stringify(body));
 
-    db.user.create(body).then(function(user) {
+    db.password.authenticate(body).then(function(password) {
+        return db.user.create({
+            email: body.email,
+            mdn: body.mdn
+        });
+    }).then(function(user) {
         res.json(user.toPublicJSON());
-    }, function(e) {
-        res.status(400).json(e);
+    }).catch(function(error) {
+        res.status(401).json(error);
     });
 });
 
@@ -233,7 +202,7 @@ app.post('/users/login', function(req, res) {
     var body = _.pick(req.body, 'mdn', 'password');
     var userInstance;
 
-    db.user.authenticate(body).then(function(user) {
+    db.body.authenticate(body).then(function(user) {
         var token = user.generateToken('authentication');
         userInstance = user;
 

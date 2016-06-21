@@ -87,7 +87,7 @@ $(document).ready(function($) {
                     alert(error.messages);
                 },
                 success: function(msg) {
-                    alert('wow' + msg.mdn);
+                    console.log(msg);
                 }
             });
         }

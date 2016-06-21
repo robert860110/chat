@@ -29,6 +29,31 @@ module.exports = function(sequelize, DataTypes) {
             }
         }
     }, {
+        classMethods: {
+            authenticate: function(body) {
+                return new Promise(function(resolve, reject) {
+                    if (typeof body.mdn !== 'string' || typeof body.password !== 'string') {
+                        return reject();
+                    }
+
+                    password.findOne({
+                        where: {
+                            mdn: body.mdn
+                        }
+                    }).then(function(password) {
+
+                        if (!password || !bcrypt.compareSync(body.password, password.get('password_hash'))) {
+                            console.log(body.password);
+                            console.log(password.password_hash);
+                            return reject();
+                        }
+                        resolve(password);
+                    }, function(e) {
+                        reject();
+                    });
+                });
+            }
+        },
         instanceMethods: {
             toPublicJSON: function() {
                 var json = this.toJSON();
