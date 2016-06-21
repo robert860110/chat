@@ -6,6 +6,7 @@ module.exports = function(sequelize, DataTypes) {
     var password = sequelize.define('password', {
         mdn: {
             type: DataTypes.STRING,
+            unique: true,
             allowNull: false
         },
         isUsed: {

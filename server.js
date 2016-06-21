@@ -159,20 +159,35 @@ app.post('/sendCode', function(req, res) {
             mdn: body.mdn.toString()
         };
 
-        // Create a MDN to OTP mapping in the password database
-        db.password.create(pwInstance).then(function(password) {
+        db.password.findOne({
+            where: {
+                mdn: body.mdn
+            }
+        }).then(function(password) {
 
-            twilioClient.sms.messages.create({
-                to: body.mdn,
-                from: '+1 408-359-4157',
-                body: 'Your confirmation code is:' + pwInstance.password + '. (Valid for 10 mins)'
-            }, function(error, message) {
-                if (!error) {
-                    res.json(message);
-                } else {
+            if (password) {
+                db.password.update(pwInstance).then(function(password) {
+                    res.json(password.toJSON());
+                }, function(error) {
+                    res.status(400).json(error);
+                });
+            } else {
+                db.password.create(pwInstance).then(function(password) {
+                    twilioClient.sms.messages.create({
+                        to: body.mdn,
+                        from: '+1 408-359-4157',
+                        body: 'Your confirmation code is:' + pwInstance.password + '. (Valid for 10 mins)'
+                    }, function(error, message) {
+                        if (!error) {
+                            res.json(message);
+                        } else {
+                            return res.status(400).json(error);
+                        }
+                    });
+                }, function(error) {
                     return res.status(400).json(error);
-                }
-            });
+                });
+            }
 
         }, function(error) {
             return res.status(400).json(error);
