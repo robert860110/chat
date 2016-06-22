@@ -11,20 +11,32 @@ var _ = require('underscore');
 var db = require('./db.js');
 var bcrypt = require('bcrypt');
 var middleware = require('./middleware.js')(db);
+var session = require('express-session');
 var twilio = require('twilio');
-var twilioClient = new twilio.RestClient('AC9c68ea35aee62e08292acd2bcfcf49b6', '938c9c574f9939b1736da9b1a3345c3c');
 
+var twilioClient = new twilio.RestClient('AC9c68ea35aee62e08292acd2bcfcf49b6', '938c9c574f9939b1736da9b1a3345c3c');
 var app = express();
 var PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(session({
+  resave: false, // don't save session if unmodified
+  saveUninitialized: false, // don't create session until something stored
+  secret: 'VERIZONSUCKS'
+}));
 
 // Routing
 app.use(express.static(__dirname + '/public'));
 
 app.get('/', function(req, res) {
-    res.send('Todo API Root');
+    res.sendFile('index.html');
 });
+
+app.get('/login', function(req, res) {
+    res.sendFile('index.html');
+});
+
 
 // GET /todos?completed=false&q=work
 app.get('/todos', middleware.requireAuthentication, function(req, res) {
