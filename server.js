@@ -39,17 +39,20 @@ app.use(function(req, res, next) {
 
 // Routing
 app.use(express.static(__dirname + '/public'));
+// app.set('view engine', 'ejs');
+// app.set('views', __dirname + '/views');
+
 
 app.get('/', function(req, res) {
-    res.sendFile('index.html');
+    res.sendFile('index1.html');
 });
 
 app.get('/login', function(req, res) {
-    res.sendFile('index.html');
+    res.sendFile('index1.html');
 });
 
 app.get('/chat', middleware.requireAuthentication, function(req, res) {
-    res.sendFile('chat.html');
+    res.sendFile(__dirname + '/public' + '/chat.html');
 });
 
 
@@ -123,7 +126,13 @@ app.post('/users', function(req, res) {
             mdn: body.mdn
         });
     }).then(function(user) {
-        res.json(user.toPublicJSON());
+        //res.json(user.toPublicJSON());
+        req.session.regenerate(function() {
+            req.session.user = user;
+            req.session.success = 'Authenticated as ' + user.mdn + ' click to <a href="/logout">logout</a>. ' + ' You may now access <a href="/restricted">/restricted</a>.';
+            res.redirect('/chat');
+        });
+
     }).catch(function(error) {
         res.status(401).json(error);
     });
@@ -133,8 +142,6 @@ app.post('/users', function(req, res) {
 app.post('/users/login', function(req, res) {
 
     var body = _.pick(req.body, 'mdn', 'password');
-
-
 
     db.password.authenticate(body).then(function(password) {
         return db.user.findByMdn(body.mdn);

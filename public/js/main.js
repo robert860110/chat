@@ -77,19 +77,25 @@ $(document).ready(function($) {
 
             data.password = $('#signup-password').val();
 
-            $.ajax({
-                type: 'POST',
-                url: 'http://localhost:3000/users',
-                data: JSON.stringify(data),
-                dataType: "json",
-                contentType: "application/json; charset=utf-8",
-                error: function(error) {
-                    alert(error.messages);
-                },
-                success: function(msg) {
-                    console.log(msg);
-                }
-            });
+            $('<form action="/users" method="POST">' +
+                '<input type="hidden" name="mdn" value="' + data.mdn + '">' +
+                '<input type="hidden" name="email" value="' + data.email + '">' +
+                '<input type="hidden" name="password" value="' + data.password + '">' +
+                '</form>').submit();
+
+            // $.ajax({
+            //     type: 'POST',
+            //     url: 'http://localhost:3000/users',
+            //     data: JSON.stringify(data),
+            //     dataType: "json",
+            //     contentType: "application/json; charset=utf-8",
+            //     error: function(error) {
+            //         alert(error.messages);
+            //     },
+            //     success: function(msg) {
+            //         console.log(msg);
+            //     }
+            // });
         }
     });
 
@@ -124,19 +130,24 @@ $(document).ready(function($) {
 
             data.password = $('#signin-password').val();
 
-            $.ajax({
-                type: 'POST',
-                url: 'http://localhost:3000/users/login',
-                data: JSON.stringify(data),
-                dataType: "json",
-                contentType: "application/json; charset=utf-8",
-                error: function(error) {
-                    alert(error.messages);
-                },
-                success: function(msg) {
-                    console.log(msg);
-                }
-            });
+            $('<form action="/users/login" method="POST">' +
+                '<input type="hidden" name="mdn" value="' + data.mdn + '">' +
+                '<input type="hidden" name="password" value="' + data.password + '">' +
+                '</form>').submit();
+
+            // $.ajax({
+            //     type: 'POST',
+            //     url: 'http://localhost:3000/users/login',
+            //     data: JSON.stringify(data),
+            //     dataType: "json",
+            //     contentType: "application/json; charset=utf-8",
+            //     error: function(error) {
+            //         alert(error.messages);
+            //     },
+            //     success: function(msg) {
+            //         console.log(msg);
+            //     }
+            // });
         }
     });
 
