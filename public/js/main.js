@@ -94,6 +94,53 @@ $(document).ready(function($) {
     });
 
 
+    // Click Login button
+    buttonLogin.click(function(e) {
+
+        e.preventDefault();
+        var data = {};
+        data.mdn = $('#signin-phone').val();
+
+        if ($(this).val() === 'Send Confirmation Code') {
+
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:3000/sendCode',
+                data: JSON.stringify(data),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                error: function(error) {
+                    alert(error.messages);
+                },
+                success: function(msg) {
+                    console.log(msg);
+                }
+            });
+
+            $('.confirmationCode-login').css("display", "block");
+            $(this).val('Login');
+
+        } else {
+
+            data.password = $('#signin-password').val();
+
+            $.ajax({
+                type: 'POST',
+                url: 'http://localhost:3000/users/login',
+                data: JSON.stringify(data),
+                dataType: "json",
+                contentType: "application/json; charset=utf-8",
+                error: function(error) {
+                    alert(error.messages);
+                },
+                success: function(msg) {
+                    console.log(msg);
+                }
+            });
+        }
+    });
+
+
     //close modal
     formModal.on('click', function(event) {
         if ($(event.target).is(formModal) || $(event.target).is('.cd-close-form')) {

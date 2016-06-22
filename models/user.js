@@ -30,21 +30,19 @@ module.exports = function(sequelize, DataTypes) {
             findByMdn: function(mdn) {
                 return new Promise(function(resolve, reject) {
                     try {
-                        var decodedJWT = jwt.verify(token, 'qwerty098');
-                        var bytes = cryptojs.AES.decrypt(decodedJWT.token, 'abc123!@#!');
-                        var tokenData = JSON.parse(bytes.toString(cryptojs.enc.Utf8));
-
-                        user.findById(tokenData.id).then(function(user) {
+                        user.findOne({
+                            where: {
+                                mdn: mdn
+                            }
+                        }).then(function(user) {
                             if (user) {
                                 resolve(user);
-                            } else {
-                                reject();
-                            }
-                        }, function(e) {
-                            reject();
+                            } else reject();
+                        }, function(error) {
+                            reject(error);
                         });
-                    } catch (e) {
-                        reject();
+                    } catch (error) {
+                        reject(error);
                     }
                 });
             }
